@@ -1,17 +1,33 @@
+
+/*
+    Title: whatabook.init.sql
+    Author: Yitzchok Kaplan
+    Date: December 6, 2021
+    Description: WhatABook database initialization script.
+*/
+
+-- drop test user if exists 
 DROP USER IF EXISTS 'whatabook_user'@'localhost';
 
-CREATE USER 'whatabook_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'MySQL8IsGreat!';
+-- create whatabook_user and grant them all privileges to the whatabook database 
+CREATE USER 'whatabook_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Mysql123!';
 
+-- grant all privileges to the whatabook database to user whatabook_user on localhost 
 GRANT ALL PRIVILEGES ON whatabook.* TO'whatabook_user'@'localhost';
 
+-- drop contstraints if they exist
 ALTER TABLE wishlist DROP FOREIGN KEY fk_book;
 ALTER TABLE wishlist DROP FOREIGN KEY fk_user;
 
+-- drop tables if they exist
 DROP TABLE IF EXISTS store;
 DROP TABLE IF EXISTS book;
 DROP TABLE IF EXISTS wishlist;
 DROP TABLE IF EXISTS user;
 
+/*
+    Create table(s)
+*/
 CREATE TABLE store (
     store_id    INT             NOT NULL    AUTO_INCREMENT,
     locale      VARCHAR(500)    NOT NULL,
@@ -46,62 +62,71 @@ CREATE TABLE wishlist (
         REFERENCES user(user_Id)
 );
 
-
+/*
+    insert store record 
+*/
 INSERT INTO store(locale)
-    VALUES('1 Broadway, New York, NY 10004');
+    VALUES('1234 Sample Rd S, Bellevue, NE 68005');
 
+/*
+    insert book records 
+*/
+INSERT INTO book(book_name, author, details)
+    VALUES('Moby-Dick', 'Herman Melville', 'The whale, 1851, Novel ');
 
 INSERT INTO book(book_name, author, details)
-    VALUES('Go Tell the Bees That I Am Gone','Diana Gabaldon', 'Outlander Series #9');
+    VALUES('Alice in Wonderland', 'Lewis Carroll', 'The original 1865 edition, Novel');
 
 INSERT INTO book(book_name, author, details)
-    VALUES('Tokyo Revengers Omnibus', 'Ken Wakui', 'B&N Exclusive Edition');
+    VALUES('Through the Looking-Glass', 'Lewis Carroll', "Sequel to Alice's Adventures in Wonderland, 1871, Novel");
 
 INSERT INTO book(book_name, author, details)
-    VALUES('The Lyrics 1956 to the Present', 'Paul McCartney', 'Two-Volume Set');
+    VALUES("The Three Musketeers", 'Alexandre Dumas', "French historical adventure novel, 1844");
 
-INSERT INTO book(book_name, author)
-    VALUES('Once Upon a Broken Heart', 'Stephanie Garber');
+INSERT INTO book(book_name, author, details)
+    VALUES('The Prince of Thieves', 'Alexandre Dumas', "Tales of Robin Hood, Book one, 1872");
 
-INSERT INTO book(book_name, author)
-    VALUES('The Judges List', 'John Grisham');
+INSERT INTO book(book_name, author, details)
+    VALUES("Robin Hood the Outlaw", 'Alexandre Dumas', "Tales of Robin Hood, Book two, 1873");
 
-INSERT INTO book(book_name, author)
-    VALUES('The Real Anthony Fauci', 'Robert F. Kennedy Jr.');
+INSERT INTO book(book_name, author, details)
+    VALUES('The Count of Monte Cristo', 'Alexandre Dumas', "Romantic Novel, 1944-46");
 
-INSERT INTO book(book_name, author)
-    VALUES('One Piece: Pirate Recipes', 'Sanji');
+INSERT INTO book(book_name, author, details)
+    VALUES('Pinocchio', 'Carlo Collodi', "Chidren's Novel, 1883");
 
-INSERT INTO book(book_name, author)
-    VALUES('Fear No Evil', 'James Patterson');
+INSERT INTO book(book_name, author, details)
+    VALUES('The Wonderful Wizard of Oz', 'L. Frank Baum', "Chidren's Novel, 1900");
 
-INSERT INTO book(book_name, author)
-    VALUES('The Wish', 'Nicholas Sparks');
-
-
+/*
+    insert user
+*/ 
 INSERT INTO user(first_name, last_name) 
-    VALUES('James', 'Smith');
+    VALUES('Bruce', 'Greyson');
 
 INSERT INTO user(first_name, last_name)
-    VALUES('Robert', 'Williams');
+    VALUES('Fred', 'Smith');
 
 INSERT INTO user(first_name, last_name)
-    VALUES('John', 'Brown');
+    VALUES('Tom', 'Ford');
 
+/*
+    insert wishlist records 
+*/
 INSERT INTO wishlist(user_id, book_id) 
     VALUES (
-        (SELECT user_id FROM user WHERE first_name = 'James'),
-        (SELECT book_id FROM book WHERE book_name = 'The Wish')
+        (SELECT user_id FROM user WHERE first_name = 'Bruce'), 
+        (SELECT book_id FROM book WHERE book_name = 'The Count of Monte Cristo')
     );
 
 INSERT INTO wishlist(user_id, book_id)
     VALUES (
-        (SELECT user_id FROM user WHERE first_name = 'Robert'),
-        (SELECT book_id FROM book WHERE book_name = 'The Real Anthony Fauci')
+        (SELECT user_id FROM user WHERE first_name = 'Fred'),
+        (SELECT book_id FROM book WHERE book_name = 'Alice in Wonderland')
     );
 
 INSERT INTO wishlist(user_id, book_id)
     VALUES (
-        (SELECT user_id FROM user WHERE first_name = 'John'),
-        (SELECT book_id FROM book WHERE book_name = 'The Lyrics 1956 to the Present')
+        (SELECT user_id FROM user WHERE first_name = 'Tom'),
+        (SELECT book_id FROM book WHERE book_name = 'The Three Musketeers')
     );
