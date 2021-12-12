@@ -1,28 +1,34 @@
-""" 
-    Title: what_a_book.py
-    Author: Yitzchok Kaplan
-    Date: December 12, 2021
-    Description: WhatABook program; Console program that interfaces with a MySQL database
-"""
 
-""" import statements """
+
+#  Title: whatabook.init.sql
+#  Author: Yitzchok Kaplan
+#  Date: December 6, 2021
+#  Description: WhatABook database initialization script.
+
+
 import sys
-import mysql.connector
-from mysql.connector import errorcode
+import mysql.connector as mysql
+import mysql.connector.errorcode as errorcode
 
-""" database config object """
+
 config = {
     "user": "whatabook_user",
-    "password": "MySQL8IsGreat!",
+    "password": "Mysql123!",
     "host": "localhost",
     "database": "whatabook",
     "raise_on_warnings": True
 }
 
 def show_menu():
-    print("\n  -- Main Menu --")
 
-    print("    1. View Books\n    2. View Store Locations\n    3. My Account\n    4. Exit Program")
+    
+    print("""\n
+    *************
+    **Main Menu**
+    *************
+    """)
+
+    print("1) View Books\n2) View Store Locations\n3) My Account\n4) Exit Program")
 
     try:
         choice = int(input('      <Example enter: 1 for book listing>: '))
@@ -34,15 +40,15 @@ def show_menu():
         sys.exit(0)
 
 def show_books(_cursor):
-    # inner join query 
     _cursor.execute("SELECT book_id, book_name, author, details from book")
-
-    # get the results from the cursor object 
+ 
     books = _cursor.fetchall()
-
-    print("\n  -- DISPLAYING BOOK LISTING --")
+    print("""\n
+    ***************************
+    **DISPLAYING BOOK LISTING**
+    ***************************
+    """)
     
-    # iterate over the player data set and display the results 
     for book in books:
         print("  Book Name: {}\n  Author: {}\n  Details: {}\n".format(book[0], book[1], book[2]))
 
@@ -50,8 +56,11 @@ def show_locations(_cursor):
     _cursor.execute("SELECT store_id, locale from store")
 
     locations = _cursor.fetchall()
-
-    print("\n  -- DISPLAYING STORE LOCATIONS --")
+    print("""\n
+    ******************************
+    **DISPLAYING STORE LOCATIONS**
+    ******************************
+    """)
 
     for location in locations:
         print("  Locale: {}\n".format(location[1]))
@@ -97,10 +106,14 @@ def show_wishlist(_cursor, _user_id):
     
     wishlist = _cursor.fetchall()
 
-    print("\n        -- DISPLAYING WISHLIST ITEMS --")
+    print("""\n
+    *******************************
+    ***DISPLAYING WISHLIST ITEMS***
+    *******************************
+    """)
 
     for book in wishlist:
-        print("        Book Name: {}\n        Author: {}\n".format(book[4], book[5]))
+        print("Book Name: {}\nAuthor: {}\n".format(book[4], book[5]))
 
 def show_books_to_add(_cursor, _user_id):
     """ query the database for a list of books not in the users wishlist """
@@ -115,7 +128,11 @@ def show_books_to_add(_cursor, _user_id):
 
     books_to_add = _cursor.fetchall()
 
-    print("\n        -- DISPLAYING AVAILABLE BOOKS --")
+    print("""\n
+    ********************************
+    ***DISPLAYING AVAILABLE BOOKS***
+    ********************************
+    """)
 
     for book in books_to_add:
         print("        Book Id: {}\n        Book Name: {}\n".format(book[0], book[1]))
@@ -126,11 +143,21 @@ def add_book_to_wishlist(_cursor, _user_id, _book_id):
 try:
     """ try/catch block for handling potential MySQL database errors """ 
 
-    db = mysql.connector.connect(**config) 
+    db = mysql.connect(**config)
 
     cursor = db.cursor() 
 
-    print("\n  Welcome to the WhatABook Application! ")
+    print("""
+ _       ____          __  ___    ____              __  
+| |     / / /_  ____ _/ /_/   |  / __ )____  ____  / /__
+| | /| / / __ \/ __ `/ __/ /| | / __  / __ \/ __ \/ //_/
+| |/ |/ / / / / /_/ / /_/ ___ |/ /_/ / /_/ / /_/ / ,<   
+|__/|__/_/ /_/\__,_/\__/_/  |_/_____/\____/\____/_/|_|  
+                                                        
+
+Welcome to What A Book.....................................
+    """)
+    
 
     user_selection = show_menu() 
 
@@ -142,13 +169,11 @@ try:
         if user_selection == 2:
             show_locations(cursor)
 
-
         if user_selection == 3:
             my_user_id = validate_user()
             account_option = show_account_menu()
-            
-            while account_option != 3:
 
+            while account_option != 3:
 
                 if account_option == 1:
                     show_wishlist(cursor, my_user_id)
@@ -156,12 +181,12 @@ try:
                 if account_option == 2:
 
                     show_books_to_add(cursor, my_user_id)
-
+ 
                     book_id = int(input("\n        Enter the id of the book you want to add: "))
                     
                     add_book_to_wishlist(cursor, my_user_id, book_id)
 
-                    db.commit() =
+                    db.commit() 
 
                     print("\n        Book id: {} was added to your wishlist!".format(book_id))
 
@@ -175,9 +200,13 @@ try:
             
         user_selection = show_menu()
 
-    print("\n\n  Program terminated...")
+    print("""\n
+***************************
+***Program terminated...***
+***************************
+""")
 
-except mysql.connector.Error as err:
+except mysql.Error as err:
     """ handle errors """ 
 
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
